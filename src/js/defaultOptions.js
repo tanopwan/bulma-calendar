@@ -4,7 +4,7 @@ const defaultOptions = {
   isRange: false,
   allowSameDayRange: true,
   lang: navigator.language.substring(0, 2) || 'en', // internationalization
-  dateFormat: 'MM/DD/YYYY',
+  dateFormat: 'MM/dd/yyyy',
   timeFormat: 'HH:mm',
   displayMode: 'default',
   editTimeManually: false,

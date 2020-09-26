@@ -157,7 +157,7 @@ export default class timePicker extends EventEmitter {
 					return true;
 				}
 				if (min && max) {
-					return dateFns.isWithinRange(time, min, max);
+					return dateFns.isWithinInterval(time, min, max);
 				}
 				if (max) {
 					return dateFns.isBefore(time, max) || dateFns.isEqual(time, max);
@@ -199,7 +199,11 @@ export default class timePicker extends EventEmitter {
 	// Set TimePicker language
 	set lang(lang = 'en') {
 		this._lang = lang;
-		this._locale = require(`date-fns/locale/${lang}/index.js`);
+		if (lang == 'en') {
+			this._locale = require(`date-fns/locale/en-US/index.js`);
+		} else {
+			this._locale = require(`date-fns/locale/${lang}/index.js`);
+		}
 		return this;
 	}
 	// Get current TimePicker language

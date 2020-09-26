@@ -114,7 +114,7 @@ export default class bulmaCalendar extends EventEmitter {
     try {
       this._locale = require(`date-fns/locale/${lang}/index.js`);
     } catch (e) {
-      lang = 'en';
+      lang = 'en-US';
       this._locale = require(`date-fns/locale/${lang}/index.js`);
     } finally {
       this._lang = lang;
@@ -461,10 +461,10 @@ export default class bulmaCalendar extends EventEmitter {
   }
 
   refresh() {
-    this._ui.header.start.day.innerHTML = this.datePicker.start ? dateFns.format(this.datePicker.start, 'DD', {
+    this._ui.header.start.day.innerHTML = this.datePicker.start ? dateFns.format(this.datePicker.start, 'dd', {
       locale: this.locale
     }) : '--';
-    this._ui.header.start.month.innerHTML = this.datePicker.start ? dateFns.format(this.datePicker.start, 'MMMM YYYY', {
+    this._ui.header.start.month.innerHTML = this.datePicker.start ? dateFns.format(this.datePicker.start, 'MMMM yyyy', {
       locale: this.locale
     }) : '';
     if (this.datePicker.start) {
@@ -492,10 +492,10 @@ export default class bulmaCalendar extends EventEmitter {
     }
 
     if (this._ui.header.end) {
-      this._ui.header.end.day.innerHTML = this.options.isRange && this.datePicker.end ? dateFns.format(this.datePicker.end, 'DD', {
+      this._ui.header.end.day.innerHTML = this.options.isRange && this.datePicker.end ? dateFns.format(this.datePicker.end, 'dd', {
         locale: this.locale
       }) : '--';
-      this._ui.header.end.month.innerHTML = this.options.isRange && this.datePicker.end ? dateFns.format(this.datePicker.end, 'MMMM YYYY', {
+      this._ui.header.end.month.innerHTML = this.options.isRange && this.datePicker.end ? dateFns.format(this.datePicker.end, 'MMMM yyyy', {
         locale: this.locale
       }) : '';
       if (this.datePicker.end) {
