@@ -84,9 +84,15 @@ export default class datePicker extends EventEmitter {
 			if (type.isDate(date)) {
 				this._date.start = this._isValidDate(date, this.min, this.max) ? dateFns.startOfDay(date) : this._date.start;
 			}
-			console.log(date)
+			
 			if (type.isString(date)) {
-				this._date.start = this._isValidDate(dateFns.parseISO(date), this.min, this.max) ? dateFns.startOfDay(dateFns.parse(date)) : this._date.start;
+				console.log(date)
+				var dateObject = dateFns.parse(date, this.format, new Date(), {
+					locale: this._locale,
+					budhhistYear: this.options.budhhistYear,
+				})
+				console.log(dateObject)
+				this._date.start = this._isValidDate(dateObject, this.min, this.max) ? dateFns.startOfDay(dateObject) : this._date.start;
 			}
 		} else {
 			this._date.start = undefined
@@ -104,7 +110,7 @@ export default class datePicker extends EventEmitter {
 				this._date.end = this._isValidDate(date, this.min, this.max) ? dateFns.endOfDay(date) : this._date.end;
 			}
 			if (type.isString(date)) {
-				this._date.end = this._isValidDate(dateFns.parse(date), this.min, this.max) ? dateFns.endOfDay(dateFns.parse(date)) : this._date.end;
+				this._date.end = this._isValidDate(dateFns.parseISO(date), this.min, this.max) ? dateFns.endOfDay(dateFns.parseISO(date)) : this._date.end;
 			}
 		} else {
 			this._date.end = undefined
@@ -123,7 +129,7 @@ export default class datePicker extends EventEmitter {
 				this._min = this._isValidDate(date) ? dateFns.startOfDay(date) : this._min;
 			}
 			if (type.isString(date)) {
-				this._min = this._isValidDate(dateFns.parse(date)) ? dateFns.startOfDay(date) : this._min;
+				this._min = this._isValidDate(dateFns.parseISO(date)) ? dateFns.startOfDay(date) : this._min;
 			}
 		}
 
@@ -141,7 +147,7 @@ export default class datePicker extends EventEmitter {
 				this._max = this._isValidDate(date) ? dateFns.endOfDay(date) : this._max;
 			}
 			if (type.isString(date)) {
-				this._max = this._isValidDate(dateFns.parse(date)) ? dateFns.endOfDay(date) : this._max;
+				this._max = this._isValidDate(dateFns.parseISO(date)) ? dateFns.endOfDay(date) : this._max;
 			}
 		}
 
@@ -352,12 +358,14 @@ export default class datePicker extends EventEmitter {
 					const dates = value.split(' - ');
 					if (dates.length) {
 						this.start = dateFns.format(new Date(dates[0]), this.format, {
-							locale: this.locale
+							locale: this.locale,
+							budhhistYear: this.options.budhhistYear,
 						});
 					}
 					if (dates.length === 2) {
 						this.end = dateFns.format(new Date(dates[1]), this.format, {
-							locale: this.locale
+							locale: this.locale,
+							budhhistYear: this.options.budhhistYear,
 						});
 					}
 				}
@@ -366,9 +374,7 @@ export default class datePicker extends EventEmitter {
 				}
 			} else {
 				if (type.isString(value)) {
-					this.start = dateFns.format(new Date(value), this.format, {
-						locale: this.locale
-					});
+					this.start = value
 					this.end = undefined;
 				}
 
@@ -378,12 +384,13 @@ export default class datePicker extends EventEmitter {
 			}
 		} else {
 			let string = (this.start && this._isValidDate(this.start)) ? dateFns.format(this.start, this.format, {
-				locale: this.locale
+				locale: this.locale,
+				budhhistYear: this.options.budhhistYear,
 			}) : '';
 
 			if (this.options.isRange) {
 				if (this.end && this._isValidDate(this.end)) {
-					string += ` - ${dateFns.format(this.end, this.format, { locale: this.locale })}`;
+					string += ` - ${dateFns.format(this.end, this.format, { locale: this.locale, budhhistYear: this.options.budhhistYear })}`;
 				}
 			}
 			return string;
@@ -400,16 +407,10 @@ export default class datePicker extends EventEmitter {
 
 		// the 12 months of the year (Jan-SDecat)
 		const monthLabels = new Array(12).fill(dateFns.startOfWeek(this._visibleDate)).map((d, i) => {
-			console.log(d)
-			console.log(dateFns.addMonths(d, i))
-			console.log(dateFns.format(dateFns.addMonths(d, i), 'MM', {
-				locale: this.locale
-			}))
 			return dateFns.format(dateFns.addMonths(d, i), 'MM', {
-				locale: this.locale
+				locale: this.locale,
 			})
 		});
-		console.log(monthLabels)
 		this._ui.body.months.innerHTML = '';
 		this._ui.body.months.appendChild(document.createRange().createContextualFragment(templateMonths({
 			months: monthLabels,
@@ -429,7 +430,8 @@ export default class datePicker extends EventEmitter {
 		});
 
 		const yearLabels = new Array(this.options.displayYearsCount * 2).fill(dateFns.subYears(this._visibleDate, this.options.displayYearsCount)).map((d, i) => dateFns.format(dateFns.addYears(d, i), 'yyyy', {
-			locale: this.locale
+			locale: this.locale,
+			budhhistYear: this.options.budhhistYear,
 		}));
 		this._ui.body.years.innerHTML = '';
 		this._ui.body.years.appendChild(document.createRange().createContextualFragment(templateYears({
@@ -443,7 +445,8 @@ export default class datePicker extends EventEmitter {
 			});
 			year.classList.remove('is-active');
 			if (year.dataset.year === dateFns.format(this._visibleDate, 'yyyy', {
-					locale: this.locale
+					locale: this.locale,
+					budhhistYear: this.options.budhhistYear,
 				})) {
 				year.classList.add('is-active');
 			}
@@ -474,7 +477,8 @@ export default class datePicker extends EventEmitter {
 			locale: this.locale
 		});
 		this._ui.navigation.year.innerHTML = dateFns.format(this._visibleDate, 'yyyy', {
-			locale: this.locale
+			locale: this.locale,
+			budhhistYear: this.options.budhhistYear,
 		});
 
 		this._renderDays();
@@ -537,7 +541,8 @@ export default class datePicker extends EventEmitter {
 		this.highlightedDates = Array.isArray(this.options.highlightedDates) ? this.options.highlightedDates : [];
 		for (var i = 0; i < this.highlightedDates.length; i++) {
 			this.highlightedDates[i] = dateFns.format(this.highlightedDates[i], this.format, {
-				locale: this.locale
+				locale: this.locale,
+				budhhistYear: this.options.budhhistYear,
 			});
 		}
 

@@ -465,7 +465,8 @@ export default class bulmaCalendar extends EventEmitter {
       locale: this.locale
     }) : '--';
     this._ui.header.start.month.innerHTML = this.datePicker.start ? dateFns.format(this.datePicker.start, 'MMMM yyyy', {
-      locale: this.locale
+      locale: this.locale,
+      budhhistYear: this.options.budhhistYear,
     }) : '';
     if (this.datePicker.start) {
       this._ui.header.start.weekday.classList.remove('is-hidden');
@@ -496,7 +497,8 @@ export default class bulmaCalendar extends EventEmitter {
         locale: this.locale
       }) : '--';
       this._ui.header.end.month.innerHTML = this.options.isRange && this.datePicker.end ? dateFns.format(this.datePicker.end, 'MMMM yyyy', {
-        locale: this.locale
+        locale: this.locale,
+        budhhistYear: this.options.budhhistYear,
       }) : '';
       if (this.datePicker.end) {
         this._ui.header.end.weekday.classList.remove('is-hidden');
