@@ -1,6 +1,8 @@
 import * as utils from './utils/index';
 import * as types from './utils/type';
 import * as dateFns from 'date-fns';
+import * as type from './utils/type';
+
 import dateUtils from 'date-and-time';
 import EventEmitter from './utils/events';
 
@@ -434,7 +436,16 @@ export default class bulmaCalendar extends EventEmitter {
       let string = '';
       switch (this.options.type) {
         case 'date':
-          string = this.datePicker.value();
+          console.log(typeof(this.datePicker.value()))
+          console.log(this.datePicker.value())
+          if (type.isString(this.datePicker.value())) {
+            string = this.datePicker.value()
+            break;
+          }
+          string = dateFns.format(this.datePicker.value(), this.format, {
+            locale: this._locale,
+            budhhistYear: this.options.budhhistYear,
+          })
           break;
         case 'time':
           string = this.timePicker.value();
@@ -461,17 +472,35 @@ export default class bulmaCalendar extends EventEmitter {
   }
 
   refresh() {
-    this._ui.header.start.day.innerHTML = this.datePicker.start ? dateFns.format(this.datePicker.start, 'dd', {
-      locale: this.locale
+    var startDate = this.datePicker.start;
+		if (type.isString(this.datePicker.start)) {
+			startDate = dateFns.parse(this.datePicker.start, this.format, new Date(), {
+				locale: this._locale,
+				budhhistYear: this.options.budhhistYear,
+			})
+    }
+    
+    var endDate = this.datePicker.end;
+		if (type.isString(this.datePicker.end)) {
+			endDate = dateFns.parse(this.datePicker.end, this.format, new Date(), {
+				locale: this._locale,
+				budhhistYear: this.options.budhhistYear,
+			})
+		}
+
+    this._ui.header.start.day.innerHTML = this.datePicker.start ? dateFns.format(startDate, 'dd', {
+      locale: this.locale,
+      budhhistYear: this.options.budhhistYear,
     }) : '--';
-    this._ui.header.start.month.innerHTML = this.datePicker.start ? dateFns.format(this.datePicker.start, 'MMMM yyyy', {
+    this._ui.header.start.month.innerHTML = this.datePicker.start ? dateFns.format(startDate, 'MMMM yyyy', {
       locale: this.locale,
       budhhistYear: this.options.budhhistYear,
     }) : '';
     if (this.datePicker.start) {
       this._ui.header.start.weekday.classList.remove('is-hidden');
-      this._ui.header.start.weekday.innerHTML = this.datePicker.start ? dateFns.format(this.datePicker.start, 'dddd', {
-        locale: this.locale
+      this._ui.header.start.weekday.innerHTML = this.datePicker.start ? dateFns.format(startDate, 'dddd', {
+        locale: this.locale,
+        budhhistYear: this.options.budhhistYear,
       }) : '';
     } else {
       this._ui.header.start.weekday.classList.add('is-hidden');
@@ -479,31 +508,36 @@ export default class bulmaCalendar extends EventEmitter {
 
     if (this._ui.header.start.hour) {
       if (this.options.editTimeManually) {
-        this._ui.header.start.inputHours.value = this.timePicker.start ? dateFns.format(this.timePicker.start, 'HH', {
-          locale: this.locale
+        this._ui.header.start.inputHours.value = this.timePicker.start ? dateFns.format(startDate, 'HH', {
+          locale: this.locale,
+          budhhistYear: this.options.budhhistYear,
         }) : '--';
-        this._ui.header.start.inputMinutes.value = this.timePicker.start ? dateFns.format(this.timePicker.start, 'mm', {
-          locale: this.locale
+        this._ui.header.start.inputMinutes.value = this.timePicker.start ? dateFns.format(startDate, 'mm', {
+          locale: this.locale,
+          budhhistYear: this.options.budhhistYear,
         }) : '--';
       } else {
-        this._ui.header.start.hour.innerHTML = this.timePicker.start ? dateFns.format(this.timePicker.start, 'HH:mm', {
-          locale: this.locale
+        this._ui.header.start.hour.innerHTML = this.timePicker.start ? dateFns.format(startDate, 'HH:mm', {
+          locale: this.locale,
+          budhhistYear: this.options.budhhistYear,
         }) : '--:--';
       }
     }
 
     if (this._ui.header.end) {
-      this._ui.header.end.day.innerHTML = this.options.isRange && this.datePicker.end ? dateFns.format(this.datePicker.end, 'dd', {
-        locale: this.locale
+      this._ui.header.end.day.innerHTML = this.options.isRange && this.datePicker.end ? dateFns.format(endDate, 'dd', {
+        locale: this.locale,
+        budhhistYear: this.options.budhhistYear,
       }) : '--';
-      this._ui.header.end.month.innerHTML = this.options.isRange && this.datePicker.end ? dateFns.format(this.datePicker.end, 'MMMM yyyy', {
+      this._ui.header.end.month.innerHTML = this.options.isRange && this.datePicker.end ? dateFns.format(endDate, 'MMMM yyyy', {
         locale: this.locale,
         budhhistYear: this.options.budhhistYear,
       }) : '';
       if (this.datePicker.end) {
         this._ui.header.end.weekday.classList.remove('is-hidden');
-        this._ui.header.end.weekday.innerHTML = this.datePicker.end ? dateFns.format(this.datePicker.end, 'dddd', {
-          locale: this.locale
+        this._ui.header.end.weekday.innerHTML = this.datePicker.end ? dateFns.format(endDate, 'dddd', {
+          locale: this.locale,
+          budhhistYear: this.options.budhhistYear,
         }) : '';
       } else {
         this._ui.header.end.weekday.classList.add('is-hidden');
@@ -511,15 +545,18 @@ export default class bulmaCalendar extends EventEmitter {
 
       if (this._ui.header.end && this._ui.header.end.hour) {
         if (this.options.editTimeManually) {
-          this._ui.header.end.inputHours.value = this.timePicker.end ? dateFns.format(this.timePicker.end, 'HH', {
-            locale: this.locale
+          this._ui.header.end.inputHours.value = this.timePicker.end ? dateFns.format(endDate, 'HH', {
+            locale: this.locale,
+            budhhistYear: this.options.budhhistYear,
           }) : '--';
-          this._ui.header.end.inputMinutes.value = this.timePicker.end ? dateFns.format(this.timePicker.end, 'mm', {
-            locale: this.locale
+          this._ui.header.end.inputMinutes.value = this.timePicker.end ? dateFns.format(endDate, 'mm', {
+            locale: this.locale,
+            budhhistYear: this.options.budhhistYear,
           }) : '--';
         } else {
-          this._ui.header.end.hour.innerHTML = this.timePicker.end ? dateFns.format(this.timePicker.end, 'HH:mm', {
-            locale: this.locale
+          this._ui.header.end.hour.innerHTML = this.timePicker.end ? dateFns.format(endDate, 'HH:mm', {
+            locale: this.locale,
+            budhhistYear: this.options.budhhistYear,
           }) : '--:--';
         }
       }
