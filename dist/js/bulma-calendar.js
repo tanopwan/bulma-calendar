@@ -44641,6 +44641,7 @@ var bulmaCalendar = function (_EventEmitter) {
       }
       if (!__WEBPACK_IMPORTED_MODULE_1__utils_type__["a" /* BooleanParse */](this.options.showClearButton)) {
         this._ui.footer.clear.classList.add('is-hidden');
+        this._ui.dummy.clear.classList.add('is-hidden');
       }
 
       if (this.options.closeOnSelect && this._ui.footer.validate) {
@@ -56131,12 +56132,10 @@ var datePicker = function (_EventEmitter) {
 				}
 
 				if (__WEBPACK_IMPORTED_MODULE_1__utils_type__["e" /* isString */](date)) {
-					console.log(date);
 					var dateObject = __WEBPACK_IMPORTED_MODULE_2_date_fns__["E" /* parse */](date, this.format, new Date(), {
 						locale: this._locale,
 						budhhistYear: this.options.budhhistYear
 					});
-					console.log(dateObject);
 					this._date.start = this._isValidDate(dateObject, this.min, this.max) ? __WEBPACK_IMPORTED_MODULE_2_date_fns__["J" /* startOfDay */](dateObject) : this._date.start;
 				}
 			} else {

@@ -86,12 +86,10 @@ export default class datePicker extends EventEmitter {
 			}
 			
 			if (type.isString(date)) {
-				console.log(date)
 				var dateObject = dateFns.parse(date, this.format, new Date(), {
 					locale: this._locale,
 					budhhistYear: this.options.budhhistYear,
 				})
-				console.log(dateObject)
 				this._date.start = this._isValidDate(dateObject, this.min, this.max) ? dateFns.startOfDay(dateObject) : this._date.start;
 			}
 		} else {
