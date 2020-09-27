@@ -43981,8 +43981,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_10__templates_footer__ = __webpack_require__(721);
 var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
 
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
-
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -44281,8 +44279,6 @@ var bulmaCalendar = function (_EventEmitter) {
         var string = '';
         switch (this.options.type) {
           case 'date':
-            console.log(_typeof(this.datePicker.value()));
-            console.log(this.datePicker.value());
             if (__WEBPACK_IMPORTED_MODULE_1__utils_type__["e" /* isString */](this.datePicker.value())) {
               string = this.datePicker.value();
               break;
@@ -56031,17 +56027,25 @@ var datePicker = function (_EventEmitter) {
 				if (!date) {
 					return false;
 				}
-				if (__WEBPACK_IMPORTED_MODULE_2_date_fns__["z" /* isValid */](date)) {
+
+				var _date = date;
+				if (__WEBPACK_IMPORTED_MODULE_1__utils_type__["e" /* isString */](date)) {
+					_date = parse(date, data.format, new Date(), {
+						locale: data.locale,
+						budhhistYear: data.budhhistYear
+					});
+				}
+				if (__WEBPACK_IMPORTED_MODULE_2_date_fns__["z" /* isValid */](_date)) {
 					if (!min && !max) {
 						return true;
 					}
 					if (min && max) {
-						return __WEBPACK_IMPORTED_MODULE_2_date_fns__["A" /* isWithinInterval */](date, min, max);
+						return __WEBPACK_IMPORTED_MODULE_2_date_fns__["A" /* isWithinInterval */](_date, min, max);
 					}
 					if (max) {
-						return __WEBPACK_IMPORTED_MODULE_2_date_fns__["v" /* isBefore */](date, max) || __WEBPACK_IMPORTED_MODULE_2_date_fns__["w" /* isEqual */](date, max);
+						return __WEBPACK_IMPORTED_MODULE_2_date_fns__["v" /* isBefore */](_date, max) || __WEBPACK_IMPORTED_MODULE_2_date_fns__["w" /* isEqual */](_date, max);
 					}
-					return __WEBPACK_IMPORTED_MODULE_2_date_fns__["u" /* isAfter */](date, min) || __WEBPACK_IMPORTED_MODULE_2_date_fns__["w" /* isEqual */](date, min);
+					return __WEBPACK_IMPORTED_MODULE_2_date_fns__["u" /* isAfter */](_date, min) || __WEBPACK_IMPORTED_MODULE_2_date_fns__["w" /* isEqual */](_date, min);
 				} else {
 					return false;
 				}

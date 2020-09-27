@@ -855,17 +855,25 @@ export default class datePicker extends EventEmitter {
 			if (!date) {
 				return false;
 			}
-			if (dateFns.isValid(date)) {
+			
+			var _date = date
+			if (type.isString(date)) {
+				_date = parse(date, data.format, new Date(), {
+					locale: data.locale,
+					budhhistYear: data.budhhistYear,
+				})
+			}
+			if (dateFns.isValid(_date)) {
 				if (!min && !max) {
 					return true;
 				}
 				if (min && max) {
-					return dateFns.isWithinInterval(date, min, max);
+					return dateFns.isWithinInterval(_date, min, max);
 				}
 				if (max) {
-					return dateFns.isBefore(date, max) || dateFns.isEqual(date, max);
+					return dateFns.isBefore(_date, max) || dateFns.isEqual(_date, max);
 				}
-				return dateFns.isAfter(date, min) || dateFns.isEqual(date, min);
+				return dateFns.isAfter(_date, min) || dateFns.isEqual(_date, min);
 			} else {
 				return false;
 			}

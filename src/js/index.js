@@ -436,8 +436,6 @@ export default class bulmaCalendar extends EventEmitter {
       let string = '';
       switch (this.options.type) {
         case 'date':
-          console.log(typeof(this.datePicker.value()))
-          console.log(this.datePicker.value())
           if (type.isString(this.datePicker.value())) {
             string = this.datePicker.value()
             break;
