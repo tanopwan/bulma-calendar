@@ -44285,18 +44285,15 @@ var bulmaCalendar = function (_EventEmitter) {
             console.log(this.datePicker.value());
             if (__WEBPACK_IMPORTED_MODULE_1__utils_type__["e" /* isString */](this.datePicker.value())) {
               string = this.datePicker.value();
-              console.log('date value:' + string);
               break;
             }
             string = __WEBPACK_IMPORTED_MODULE_2_date_fns__["l" /* format */](this.datePicker.value(), this.format, {
               locale: this._locale,
               budhhistYear: this.options.budhhistYear
             });
-            console.log('date value:' + string);
             break;
           case 'time':
             string = this.timePicker.value();
-            console.log('time value:' + string);
             break;
           case 'datetime':
             var start = this.datePicker.start ? __WEBPACK_IMPORTED_MODULE_2_date_fns__["s" /* getTime */](__WEBPACK_IMPORTED_MODULE_2_date_fns__["c" /* addMinutes */](__WEBPACK_IMPORTED_MODULE_2_date_fns__["b" /* addHours */](this.datePicker.start, __WEBPACK_IMPORTED_MODULE_2_date_fns__["p" /* getHours */](this.timePicker.start)), __WEBPACK_IMPORTED_MODULE_2_date_fns__["q" /* getMinutes */](this.timePicker.start))) : undefined;
@@ -44313,7 +44310,6 @@ var bulmaCalendar = function (_EventEmitter) {
             if (end) {
               string += ' - ' + (end ? __WEBPACK_IMPORTED_MODULE_2_date_fns__["l" /* format */](new Date(end), this.format, { locale: this.locale }) : '');
             }
-            console.log('datetime value:' + string);
             break;
         }
         return string;
@@ -55945,8 +55941,6 @@ var datePicker = function (_EventEmitter) {
 					});
 				}
 
-				console.log(theDate);
-				console.log(_this5.start);
 				var startDate = _this5.start;
 				if (__WEBPACK_IMPORTED_MODULE_1__utils_type__["e" /* isString */](_this5.start)) {
 					startDate = __WEBPACK_IMPORTED_MODULE_2_date_fns__["E" /* parse */](_this5.start, _this5.format, new Date(), {
