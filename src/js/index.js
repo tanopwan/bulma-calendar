@@ -156,7 +156,14 @@ export default class bulmaCalendar extends EventEmitter {
   }
 
   set startDate(date = undefined) {
-    this.datePicker.start = dateUtils.parse(date, this.dateFormat);
+    if (type.isString(date)) {
+      this.datePicker.start = dateFns.parse(date, this.options.dateFormat, new Date(), {
+        locale: this._locale,
+        budhhistYear: this.options.budhhistYear,
+      })
+    } else {
+      this.datePicker.start = date
+    }
     return this;
   }
   get startDate() {
@@ -559,6 +566,7 @@ export default class bulmaCalendar extends EventEmitter {
         }
       }
     }
+    this.datePicker.refresh();
     this.emit('refresh', this);
   }
 

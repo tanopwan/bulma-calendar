@@ -44403,6 +44403,7 @@ var bulmaCalendar = function (_EventEmitter) {
           }
         }
       }
+      this.datePicker.refresh();
       this.emit('refresh', this);
     }
   }, {
@@ -44862,7 +44863,14 @@ var bulmaCalendar = function (_EventEmitter) {
     set: function set() {
       var date = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : undefined;
 
-      this.datePicker.start = __WEBPACK_IMPORTED_MODULE_3_date_and_time___default.a.parse(date, this.dateFormat);
+      if (__WEBPACK_IMPORTED_MODULE_1__utils_type__["e" /* isString */](date)) {
+        this.datePicker.start = __WEBPACK_IMPORTED_MODULE_2_date_fns__["E" /* parse */](date, this.options.dateFormat, new Date(), {
+          locale: this._locale,
+          budhhistYear: this.options.budhhistYear
+        });
+      } else {
+        this.datePicker.start = date;
+      }
       return this;
     },
     get: function get() {
