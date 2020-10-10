@@ -108,7 +108,11 @@ export default class datePicker extends EventEmitter {
 				this._date.end = this._isValidDate(date, this.min, this.max) ? dateFns.endOfDay(date) : this._date.end;
 			}
 			if (type.isString(date)) {
-				this._date.end = this._isValidDate(dateFns.parseISO(date), this.min, this.max) ? dateFns.endOfDay(dateFns.parseISO(date)) : this._date.end;
+				var dateObject = dateFns.parse(date, this.format, new Date(), {
+					locale: this._locale,
+					budhhistYear: this.options.budhhistYear,
+				})
+				this._date.end = this._isValidDate(dateObject, this.min, this.max) ? dateFns.endOfDay(dateObject) : this._date.end;
 			}
 		} else {
 			this._date.end = undefined
@@ -387,16 +391,10 @@ export default class datePicker extends EventEmitter {
 				if (type.isString(value)) {
 					const dates = value.split(' - ');
 					if (dates.length) {
-						this.start = dateFns.format(new Date(dates[0]), this.format, {
-							locale: this.locale,
-							budhhistYear: this.options.budhhistYear,
-						});
+						this.start = dates[0]
 					}
 					if (dates.length === 2) {
-						this.end = dateFns.format(new Date(dates[1]), this.format, {
-							locale: this.locale,
-							budhhistYear: this.options.budhhistYear,
-						});
+						this.end = dates[1]
 					}
 				}
 				if (type.isObject(value) || type.isDate(value)) {
@@ -725,9 +723,26 @@ export default class datePicker extends EventEmitter {
 		const days = new Array(dateFns.differenceInDays(end, start) + 1)
 			.fill(start)
 			.map((s, i) => {
+				var startDate = this.start
+				if (type.isString(this.start)) {
+					startDate = dateFns.parse(this.start, this.format, new Date(), {
+						locale: this._locale,
+						budhhistYear: this.options.budhhistYear,
+					})
+				}
+				var endDate = this.end
+				if (type.isString(this.end)) {
+					endDate = dateFns.parse(this.end, this.format, new Date(), {
+						locale: this._locale,
+						budhhistYear: this.options.budhhistYear,
+					})
+				}
 				const theDate = dateFns.startOfDay(dateFns.addDays(s, i + this.options.weekStart));
 				const isThisMonth = dateFns.isSameMonth(date, theDate);
-				const isInRange = this.options.isRange && dateFns.isWithinInterval(theDate, dateFns.startOfDay(this.start), dateFns.endOfDay(this.end));
+				const isInRange = this.options.isRange && endDate && dateFns.isWithinInterval(theDate, {
+					start: dateFns.startOfDay(startDate),
+					end: dateFns.endOfDay(endDate),
+				});
 				let isDisabled = this.max ? dateFns.isAfter(dateFns.startOfDay(theDate), dateFns.endOfDay(this.max)) : false;
 				isDisabled = !isDisabled && this.min ? dateFns.isBefore(dateFns.startOfDay(theDate), dateFns.startOfDay(this.min)) : isDisabled;
 				let isHighlighted = false;
@@ -767,20 +782,6 @@ export default class datePicker extends EventEmitter {
 					});
 				}
 
-				var startDate = this.start
-				if (type.isString(this.start)) {
-					startDate = dateFns.parse(this.start, this.format, new Date(), {
-						locale: this._locale,
-						budhhistYear: this.options.budhhistYear,
-					})
-				}
-				var endDate = this.end
-				if (type.isString(this.end)) {
-					endDate = dateFns.parse(this.end, this.format, new Date(), {
-						locale: this._locale,
-						budhhistYear: this.options.budhhistYear,
-					})
-				}
 				return {
 					date: theDate,
 					isRange: this.options.isRange,
@@ -866,7 +867,7 @@ export default class datePicker extends EventEmitter {
 					return true;
 				}
 				if (min && max) {
-					return dateFns.isWithinInterval(_date, min, max);
+					return dateFns.isWithinInterval(_date, { start: min, end: max });
 				}
 				if (max) {
 					return dateFns.isBefore(_date, max) || dateFns.isEqual(_date, max);

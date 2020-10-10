@@ -152,17 +152,25 @@ export default class timePicker extends EventEmitter {
 			if (!time) {
 				return false;
 			}
-			if (dateFns.isValid(time)) {
+
+			var _time = time
+			if (type.isString(time)) {
+				_time = parse(time, data.format, new Date(), {
+					locale: data.locale,
+					budhhistYear: data.budhhistYear,
+				})
+			}
+			if (dateFns.isValid(_time)) {
 				if (!min && !max) {
 					return true;
 				}
 				if (min && max) {
-					return dateFns.isWithinInterval(time, min, max);
+					return dateFns.isWithinInterval(_time, { start: min, end: max });
 				}
 				if (max) {
-					return dateFns.isBefore(time, max) || dateFns.isEqual(time, max);
+					return dateFns.isBefore(_time, max) || dateFns.isEqual(_time, max);
 				}
-				return dateFns.isAfter(time, min) || dateFns.isEqual(time, min);
+				return dateFns.isAfter(_time, min) || dateFns.isEqual(_time, min);
 			} else {
 				return false;
 			}
@@ -612,14 +620,10 @@ export default class timePicker extends EventEmitter {
 				if (type.isString(value)) {
 					const times = value.split(' - ');
 					if (times.length) {
-						this.start = dateFns.format(new Date(times[0]), this.format, {
-							locale: this.locale
-						});
+						this.start = times[0]
 					}
 					if (times.length === 2) {
-						this.end = dateFns.format(new Date(times[1]), this.format, {
-							locale: this.locale
-						});
+						this.end = times[1]
 					}
 				}
 				if (type.isObject(value) || type.isDate(value)) {

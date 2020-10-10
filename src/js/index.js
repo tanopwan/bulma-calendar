@@ -276,10 +276,12 @@ export default class bulmaCalendar extends EventEmitter {
    *                                                  *
    ****************************************************/
   onSelectDateTimePicker(e) {
-    if (e.type === 'select' && this.options.closeOnSelect === true  && this.options.displayMode !== 'inline') {
+    if ((e.type === 'select' || e.type === 'select:start' ) && this.options.displayMode !== 'inline') {
       this.refresh();
       this.save();
-      this.hide();
+      if (this.options.closeOnSelect === true) {
+        this.hide();
+      }
       this.emit(e.type, this);
     }
   }
@@ -465,10 +467,11 @@ export default class bulmaCalendar extends EventEmitter {
           }
 
           string = start ? dateFns.format(new Date(start), this.format, {
-            locale: this.locale
+            locale: this.locale,
+            budhhistYear: this.options.budhhistYear,
           }) : '';
           if (end) {
-            string += ` - ${end ? dateFns.format(new Date(end), this.format, { locale: this.locale }) : ''}`;
+            string += ` - ${end ? dateFns.format(new Date(end), this.format, { locale: this.locale, budhhistYear: this.options.budhhistYear }) : ''}`;
           }
           break;
       }
@@ -492,18 +495,22 @@ export default class bulmaCalendar extends EventEmitter {
 				budhhistYear: this.options.budhhistYear,
 			})
 		}
-
-    this._ui.header.start.day.innerHTML = this.datePicker.start ? dateFns.format(startDate, 'dd', {
+    console.log('refresh is called, this.datePicker.start:', this.datePicker.start)
+    console.log('refresh is called, startDate:', startDate ? dateFns.format(startDate, 'dd', {
+      locale: this.locale,
+      budhhistYear: this.options.budhhistYear,
+    }) : '--')
+    this._ui.header.start.day.innerHTML = startDate ? dateFns.format(startDate, 'dd', {
       locale: this.locale,
       budhhistYear: this.options.budhhistYear,
     }) : '--';
-    this._ui.header.start.month.innerHTML = this.datePicker.start ? dateFns.format(startDate, 'MMMM yyyy', {
+    this._ui.header.start.month.innerHTML = startDate ? dateFns.format(startDate, 'MMMM yyyy', {
       locale: this.locale,
       budhhistYear: this.options.budhhistYear,
     }) : '';
-    if (this.datePicker.start) {
+    if (startDate) {
       this._ui.header.start.weekday.classList.remove('is-hidden');
-      this._ui.header.start.weekday.innerHTML = this.datePicker.start ? dateFns.format(startDate, 'dddd', {
+      this._ui.header.start.weekday.innerHTML = startDate ? dateFns.format(startDate, 'dddd', {
         locale: this.locale,
         budhhistYear: this.options.budhhistYear,
       }) : '';
@@ -511,18 +518,33 @@ export default class bulmaCalendar extends EventEmitter {
       this._ui.header.start.weekday.classList.add('is-hidden');
     }
 
+    var startTime = this.timePicker.start;
+    if (type.isString(this.timePicker.start)) {
+			startTime = dateFns.parse(this.timePicker.start, this.format, new Date(), {
+				locale: this._locale,
+				budhhistYear: this.options.budhhistYear,
+			})
+    }
+    
+    var endTime = this.timePicker.end;
+		if (type.isString(this.timePicker.end)) {
+			endTime = dateFns.parse(this.timePicker.end, this.format, new Date(), {
+				locale: this._locale,
+				budhhistYear: this.options.budhhistYear,
+			})
+		}
     if (this._ui.header.start.hour) {
       if (this.options.editTimeManually) {
-        this._ui.header.start.inputHours.value = this.timePicker.start ? dateFns.format(startDate, 'HH', {
+        this._ui.header.start.inputHours.value = this.timePicker.start ? dateFns.format(startTime, 'HH', {
           locale: this.locale,
           budhhistYear: this.options.budhhistYear,
         }) : '--';
-        this._ui.header.start.inputMinutes.value = this.timePicker.start ? dateFns.format(startDate, 'mm', {
+        this._ui.header.start.inputMinutes.value = this.timePicker.start ? dateFns.format(startTime, 'mm', {
           locale: this.locale,
           budhhistYear: this.options.budhhistYear,
         }) : '--';
       } else {
-        this._ui.header.start.hour.innerHTML = this.timePicker.start ? dateFns.format(startDate, 'HH:mm', {
+        this._ui.header.start.hour.innerHTML = this.timePicker.start ? dateFns.format(startTime, 'HH:mm', {
           locale: this.locale,
           budhhistYear: this.options.budhhistYear,
         }) : '--:--';
@@ -550,16 +572,16 @@ export default class bulmaCalendar extends EventEmitter {
 
       if (this._ui.header.end && this._ui.header.end.hour) {
         if (this.options.editTimeManually) {
-          this._ui.header.end.inputHours.value = this.timePicker.end ? dateFns.format(endDate, 'HH', {
+          this._ui.header.end.inputHours.value = this.timePicker.end ? dateFns.format(endTime, 'HH', {
             locale: this.locale,
             budhhistYear: this.options.budhhistYear,
           }) : '--';
-          this._ui.header.end.inputMinutes.value = this.timePicker.end ? dateFns.format(endDate, 'mm', {
+          this._ui.header.end.inputMinutes.value = this.timePicker.end ? dateFns.format(endTime, 'mm', {
             locale: this.locale,
             budhhistYear: this.options.budhhistYear,
           }) : '--';
         } else {
-          this._ui.header.end.hour.innerHTML = this.timePicker.end ? dateFns.format(endDate, 'HH:mm', {
+          this._ui.header.end.hour.innerHTML = this.timePicker.end ? dateFns.format(endTime, 'HH:mm', {
             locale: this.locale,
             budhhistYear: this.options.budhhistYear,
           }) : '--:--';
@@ -593,8 +615,42 @@ export default class bulmaCalendar extends EventEmitter {
     this.snapshot();
 
     if (this.element.value) {
-      this.datePicker.value(this.element.value);
-      this.timePicker.value(this.element.value);
+      let dateValue = this.element.value;
+      let timeValue = this.element.value;
+      if (this.options.type == 'datetime' && type.isString(this.element.value)) {
+        const dates = this.element.value.split(' - ');
+        if (dates.length) {
+          let dateStartObject = dateFns.parse(dates[0], this.format, new Date(), {
+            locale: this.locale,
+            budhhistYear: this.options.budhhistYear,
+          });
+          dateValue = dateFns.format(dateStartObject, this.datePicker.format, {
+            locale: this.locale,
+            budhhistYear: this.options.budhhistYear,
+          })
+          timeValue = dateFns.format(dateStartObject, this.timePicker.format, {
+            locale: this.locale,
+            budhhistYear: this.options.budhhistYear,
+          })
+        }
+        if (dates.length == 2) {
+          let dateEndObject = dateFns.parse(dates[1], this.format, new Date(), {
+            locale: this.locale,
+            budhhistYear: this.options.budhhistYear,
+          });
+          dateValue= dateValue + ' - ' + dateFns.format(dateEndObject, this.datePicker.format, {
+            locale: this.locale,
+            budhhistYear: this.options.budhhistYear,
+          })
+          timeValue= timeValue + ' - ' + dateFns.format(dateEndObject, this.timePicker.format, {
+            locale: this.locale,
+            budhhistYear: this.options.budhhistYear,
+          })
+        }
+      }
+
+      this.datePicker.value(dateValue);
+      this.timePicker.value(timeValue);
     }
 
     this.datePicker.show();
@@ -676,9 +732,44 @@ export default class bulmaCalendar extends EventEmitter {
       ...this.options,
       lang: this.lang
     });
+    
     if (this.element.value) {
-      this.datePicker.value(this.element.value);
-      this.timePicker.value(this.element.value);
+      let dateValue = this.element.value;
+      let timeValue = this.element.value;
+      if (this.options.type == 'datetime' && type.isString(this.element.value)) {
+        const dates = this.element.value.split(' - ');
+        if (dates.length) {
+          let dateStartObject = dateFns.parse(dates[0], this.format, new Date(), {
+            locale: this.locale,
+            budhhistYear: this.options.budhhistYear,
+          });
+          dateValue = dateFns.format(dateStartObject, this.datePicker.format, {
+            locale: this.locale,
+            budhhistYear: this.options.budhhistYear,
+          })
+          timeValue = dateFns.format(dateStartObject, this.timePicker.format, {
+            locale: this.locale,
+            budhhistYear: this.options.budhhistYear,
+          })
+        }
+        if (dates.length == 2) {
+          let dateEndObject = dateFns.parse(dates[1], this.format, new Date(), {
+            locale: this.locale,
+            budhhistYear: this.options.budhhistYear,
+          });
+          dateValue= dateValue + ' - ' + dateFns.format(dateEndObject, this.datePicker.format, {
+            locale: this.locale,
+            budhhistYear: this.options.budhhistYear,
+          })
+          timeValue= timeValue + ' - ' + dateFns.format(dateEndObject, this.timePicker.format, {
+            locale: this.locale,
+            budhhistYear: this.options.budhhistYear,
+          })
+        }
+      }
+
+      this.datePicker.value(dateValue);
+      this.timePicker.value(timeValue);
     }
 
     this.lang = this.options.lang;
