@@ -495,11 +495,6 @@ export default class bulmaCalendar extends EventEmitter {
 				budhhistYear: this.options.budhhistYear,
 			})
 		}
-    console.log('refresh is called, this.datePicker.start:', this.datePicker.start)
-    console.log('refresh is called, startDate:', startDate ? dateFns.format(startDate, 'dd', {
-      locale: this.locale,
-      budhhistYear: this.options.budhhistYear,
-    }) : '--')
     this._ui.header.start.day.innerHTML = startDate ? dateFns.format(startDate, 'dd', {
       locale: this.locale,
       budhhistYear: this.options.budhhistYear,

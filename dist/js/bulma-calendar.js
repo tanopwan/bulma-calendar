@@ -44332,11 +44332,6 @@ var bulmaCalendar = function (_EventEmitter) {
           budhhistYear: this.options.budhhistYear
         });
       }
-      console.log('refresh is called, this.datePicker.start:', this.datePicker.start);
-      console.log('refresh is called, startDate:', startDate ? __WEBPACK_IMPORTED_MODULE_2_date_fns__["l" /* format */](startDate, 'dd', {
-        locale: this.locale,
-        budhhistYear: this.options.budhhistYear
-      }) : '--');
       this._ui.header.start.day.innerHTML = startDate ? __WEBPACK_IMPORTED_MODULE_2_date_fns__["l" /* format */](startDate, 'dd', {
         locale: this.locale,
         budhhistYear: this.options.budhhistYear
@@ -44529,7 +44524,6 @@ var bulmaCalendar = function (_EventEmitter) {
     key: 'save',
     value: function save() {
       var date = this.value();
-      console.log('save', date);
 
       var _date$split = date.split(' - '),
           _date$split2 = _slicedToArray(_date$split, 2),
@@ -60916,9 +60910,7 @@ var timePicker = function (_EventEmitter) {
 			}
 			e.stopPropagation();
 
-			console.log('before', this.end);
 			this.end = __WEBPACK_IMPORTED_MODULE_2_date_fns__["O" /* subMinutes */](this.end, this.options.minuteSteps);
-			console.log('after', this.end);
 			setTimeout(function () {
 				_this9._ui.end.minutes.number.classList.add('is-decrement-hide');
 
