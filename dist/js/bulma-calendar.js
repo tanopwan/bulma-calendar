@@ -6592,7 +6592,7 @@ function format(dirtyDate, dirtyFormatStr, dirtyOptions) {
     weekStartsOn: weekStartsOn,
     locale: locale,
     _originalDate: originalDate,
-    budhhistYear: options.budhhistYear || false
+    buddhistYear: options.buddhistYear || false
   };
   var result = formatStr.match(longFormattingTokensRegExp).map(function (substring) {
     var firstCharacter = substring[0];
@@ -6677,7 +6677,7 @@ var formatters = {
 
     var year = signedYear > 0 ? signedYear : 1 - signedYear;
 
-    if (options && options.budhhistYear) {
+    if (options && options.buddhistYear) {
       year = year + 543;
     }
 
@@ -8496,7 +8496,7 @@ function parse(dirtyDateString, dirtyFormatString, dirtyReferenceDate, dirtyOpti
     firstWeekContainsDate: firstWeekContainsDate,
     weekStartsOn: weekStartsOn,
     locale: locale,
-    budhhistYear: options.budhhistYear || false // If timezone isn't specified, it will be set to the system timezone
+    buddhistYear: options.buddhistYear || false // If timezone isn't specified, it will be set to the system timezone
 
   };
   var setters = [{
@@ -44088,10 +44088,12 @@ var bulmaCalendar = function (_EventEmitter) {
      *                                                  *
      ****************************************************/
     value: function onSelectDateTimePicker(e) {
-      if (e.type === 'select' && this.options.closeOnSelect === true && this.options.displayMode !== 'inline') {
+      if ((e.type === 'select' || e.type === 'select:start') && this.options.displayMode !== 'inline') {
         this.refresh();
         this.save();
-        this.hide();
+        if (this.options.closeOnSelect === true) {
+          this.hide();
+        }
         this.emit(e.type, this);
       }
     }
@@ -44301,10 +44303,11 @@ var bulmaCalendar = function (_EventEmitter) {
             }
 
             string = start ? __WEBPACK_IMPORTED_MODULE_2_date_fns__["l" /* format */](new Date(start), this.format, {
-              locale: this.locale
+              locale: this.locale,
+              budhhistYear: this.options.budhhistYear
             }) : '';
             if (end) {
-              string += ' - ' + (end ? __WEBPACK_IMPORTED_MODULE_2_date_fns__["l" /* format */](new Date(end), this.format, { locale: this.locale }) : '');
+              string += ' - ' + (end ? __WEBPACK_IMPORTED_MODULE_2_date_fns__["l" /* format */](new Date(end), this.format, { locale: this.locale, budhhistYear: this.options.budhhistYear }) : '');
             }
             break;
         }
@@ -44329,18 +44332,22 @@ var bulmaCalendar = function (_EventEmitter) {
           budhhistYear: this.options.budhhistYear
         });
       }
-
-      this._ui.header.start.day.innerHTML = this.datePicker.start ? __WEBPACK_IMPORTED_MODULE_2_date_fns__["l" /* format */](startDate, 'dd', {
+      console.log('refresh is called, this.datePicker.start:', this.datePicker.start);
+      console.log('refresh is called, startDate:', startDate ? __WEBPACK_IMPORTED_MODULE_2_date_fns__["l" /* format */](startDate, 'dd', {
+        locale: this.locale,
+        budhhistYear: this.options.budhhistYear
+      }) : '--');
+      this._ui.header.start.day.innerHTML = startDate ? __WEBPACK_IMPORTED_MODULE_2_date_fns__["l" /* format */](startDate, 'dd', {
         locale: this.locale,
         budhhistYear: this.options.budhhistYear
       }) : '--';
-      this._ui.header.start.month.innerHTML = this.datePicker.start ? __WEBPACK_IMPORTED_MODULE_2_date_fns__["l" /* format */](startDate, 'MMMM yyyy', {
+      this._ui.header.start.month.innerHTML = startDate ? __WEBPACK_IMPORTED_MODULE_2_date_fns__["l" /* format */](startDate, 'MMMM yyyy', {
         locale: this.locale,
         budhhistYear: this.options.budhhistYear
       }) : '';
-      if (this.datePicker.start) {
+      if (startDate) {
         this._ui.header.start.weekday.classList.remove('is-hidden');
-        this._ui.header.start.weekday.innerHTML = this.datePicker.start ? __WEBPACK_IMPORTED_MODULE_2_date_fns__["l" /* format */](startDate, 'dddd', {
+        this._ui.header.start.weekday.innerHTML = startDate ? __WEBPACK_IMPORTED_MODULE_2_date_fns__["l" /* format */](startDate, 'dddd', {
           locale: this.locale,
           budhhistYear: this.options.budhhistYear
         }) : '';
@@ -44348,18 +44355,33 @@ var bulmaCalendar = function (_EventEmitter) {
         this._ui.header.start.weekday.classList.add('is-hidden');
       }
 
+      var startTime = this.timePicker.start;
+      if (__WEBPACK_IMPORTED_MODULE_1__utils_type__["e" /* isString */](this.timePicker.start)) {
+        startTime = __WEBPACK_IMPORTED_MODULE_2_date_fns__["E" /* parse */](this.timePicker.start, this.format, new Date(), {
+          locale: this._locale,
+          budhhistYear: this.options.budhhistYear
+        });
+      }
+
+      var endTime = this.timePicker.end;
+      if (__WEBPACK_IMPORTED_MODULE_1__utils_type__["e" /* isString */](this.timePicker.end)) {
+        endTime = __WEBPACK_IMPORTED_MODULE_2_date_fns__["E" /* parse */](this.timePicker.end, this.format, new Date(), {
+          locale: this._locale,
+          budhhistYear: this.options.budhhistYear
+        });
+      }
       if (this._ui.header.start.hour) {
         if (this.options.editTimeManually) {
-          this._ui.header.start.inputHours.value = this.timePicker.start ? __WEBPACK_IMPORTED_MODULE_2_date_fns__["l" /* format */](startDate, 'HH', {
+          this._ui.header.start.inputHours.value = this.timePicker.start ? __WEBPACK_IMPORTED_MODULE_2_date_fns__["l" /* format */](startTime, 'HH', {
             locale: this.locale,
             budhhistYear: this.options.budhhistYear
           }) : '--';
-          this._ui.header.start.inputMinutes.value = this.timePicker.start ? __WEBPACK_IMPORTED_MODULE_2_date_fns__["l" /* format */](startDate, 'mm', {
+          this._ui.header.start.inputMinutes.value = this.timePicker.start ? __WEBPACK_IMPORTED_MODULE_2_date_fns__["l" /* format */](startTime, 'mm', {
             locale: this.locale,
             budhhistYear: this.options.budhhistYear
           }) : '--';
         } else {
-          this._ui.header.start.hour.innerHTML = this.timePicker.start ? __WEBPACK_IMPORTED_MODULE_2_date_fns__["l" /* format */](startDate, 'HH:mm', {
+          this._ui.header.start.hour.innerHTML = this.timePicker.start ? __WEBPACK_IMPORTED_MODULE_2_date_fns__["l" /* format */](startTime, 'HH:mm', {
             locale: this.locale,
             budhhistYear: this.options.budhhistYear
           }) : '--:--';
@@ -44387,16 +44409,16 @@ var bulmaCalendar = function (_EventEmitter) {
 
         if (this._ui.header.end && this._ui.header.end.hour) {
           if (this.options.editTimeManually) {
-            this._ui.header.end.inputHours.value = this.timePicker.end ? __WEBPACK_IMPORTED_MODULE_2_date_fns__["l" /* format */](endDate, 'HH', {
+            this._ui.header.end.inputHours.value = this.timePicker.end ? __WEBPACK_IMPORTED_MODULE_2_date_fns__["l" /* format */](endTime, 'HH', {
               locale: this.locale,
               budhhistYear: this.options.budhhistYear
             }) : '--';
-            this._ui.header.end.inputMinutes.value = this.timePicker.end ? __WEBPACK_IMPORTED_MODULE_2_date_fns__["l" /* format */](endDate, 'mm', {
+            this._ui.header.end.inputMinutes.value = this.timePicker.end ? __WEBPACK_IMPORTED_MODULE_2_date_fns__["l" /* format */](endTime, 'mm', {
               locale: this.locale,
               budhhistYear: this.options.budhhistYear
             }) : '--';
           } else {
-            this._ui.header.end.hour.innerHTML = this.timePicker.end ? __WEBPACK_IMPORTED_MODULE_2_date_fns__["l" /* format */](endDate, 'HH:mm', {
+            this._ui.header.end.hour.innerHTML = this.timePicker.end ? __WEBPACK_IMPORTED_MODULE_2_date_fns__["l" /* format */](endTime, 'HH:mm', {
               locale: this.locale,
               budhhistYear: this.options.budhhistYear
             }) : '--:--';
@@ -44434,8 +44456,42 @@ var bulmaCalendar = function (_EventEmitter) {
       this.snapshot();
 
       if (this.element.value) {
-        this.datePicker.value(this.element.value);
-        this.timePicker.value(this.element.value);
+        var dateValue = this.element.value;
+        var timeValue = this.element.value;
+        if (this.options.type == 'datetime' && __WEBPACK_IMPORTED_MODULE_1__utils_type__["e" /* isString */](this.element.value)) {
+          var dates = this.element.value.split(' - ');
+          if (dates.length) {
+            var dateStartObject = __WEBPACK_IMPORTED_MODULE_2_date_fns__["E" /* parse */](dates[0], this.format, new Date(), {
+              locale: this.locale,
+              budhhistYear: this.options.budhhistYear
+            });
+            dateValue = __WEBPACK_IMPORTED_MODULE_2_date_fns__["l" /* format */](dateStartObject, this.datePicker.format, {
+              locale: this.locale,
+              budhhistYear: this.options.budhhistYear
+            });
+            timeValue = __WEBPACK_IMPORTED_MODULE_2_date_fns__["l" /* format */](dateStartObject, this.timePicker.format, {
+              locale: this.locale,
+              budhhistYear: this.options.budhhistYear
+            });
+          }
+          if (dates.length == 2) {
+            var dateEndObject = __WEBPACK_IMPORTED_MODULE_2_date_fns__["E" /* parse */](dates[1], this.format, new Date(), {
+              locale: this.locale,
+              budhhistYear: this.options.budhhistYear
+            });
+            dateValue = dateValue + ' - ' + __WEBPACK_IMPORTED_MODULE_2_date_fns__["l" /* format */](dateEndObject, this.datePicker.format, {
+              locale: this.locale,
+              budhhistYear: this.options.budhhistYear
+            });
+            timeValue = timeValue + ' - ' + __WEBPACK_IMPORTED_MODULE_2_date_fns__["l" /* format */](dateEndObject, this.timePicker.format, {
+              locale: this.locale,
+              budhhistYear: this.options.budhhistYear
+            });
+          }
+        }
+
+        this.datePicker.value(dateValue);
+        this.timePicker.value(timeValue);
       }
 
       this.datePicker.show();
@@ -44473,6 +44529,7 @@ var bulmaCalendar = function (_EventEmitter) {
     key: 'save',
     value: function save() {
       var date = this.value();
+      console.log('save', date);
 
       var _date$split = date.split(' - '),
           _date$split2 = _slicedToArray(_date$split, 2),
@@ -44533,9 +44590,44 @@ var bulmaCalendar = function (_EventEmitter) {
       this.timePicker = new __WEBPACK_IMPORTED_MODULE_6__timePicker__["a" /* default */](_extends({}, this.options, {
         lang: this.lang
       }));
+
       if (this.element.value) {
-        this.datePicker.value(this.element.value);
-        this.timePicker.value(this.element.value);
+        var dateValue = this.element.value;
+        var timeValue = this.element.value;
+        if (this.options.type == 'datetime' && __WEBPACK_IMPORTED_MODULE_1__utils_type__["e" /* isString */](this.element.value)) {
+          var dates = this.element.value.split(' - ');
+          if (dates.length) {
+            var dateStartObject = __WEBPACK_IMPORTED_MODULE_2_date_fns__["E" /* parse */](dates[0], this.format, new Date(), {
+              locale: this.locale,
+              budhhistYear: this.options.budhhistYear
+            });
+            dateValue = __WEBPACK_IMPORTED_MODULE_2_date_fns__["l" /* format */](dateStartObject, this.datePicker.format, {
+              locale: this.locale,
+              budhhistYear: this.options.budhhistYear
+            });
+            timeValue = __WEBPACK_IMPORTED_MODULE_2_date_fns__["l" /* format */](dateStartObject, this.timePicker.format, {
+              locale: this.locale,
+              budhhistYear: this.options.budhhistYear
+            });
+          }
+          if (dates.length == 2) {
+            var dateEndObject = __WEBPACK_IMPORTED_MODULE_2_date_fns__["E" /* parse */](dates[1], this.format, new Date(), {
+              locale: this.locale,
+              budhhistYear: this.options.budhhistYear
+            });
+            dateValue = dateValue + ' - ' + __WEBPACK_IMPORTED_MODULE_2_date_fns__["l" /* format */](dateEndObject, this.datePicker.format, {
+              locale: this.locale,
+              budhhistYear: this.options.budhhistYear
+            });
+            timeValue = timeValue + ' - ' + __WEBPACK_IMPORTED_MODULE_2_date_fns__["l" /* format */](dateEndObject, this.timePicker.format, {
+              locale: this.locale,
+              budhhistYear: this.options.budhhistYear
+            });
+          }
+        }
+
+        this.datePicker.value(dateValue);
+        this.timePicker.value(timeValue);
       }
 
       this.lang = this.options.lang;
@@ -47337,7 +47429,7 @@ var formatters = {
 
       var year = signedYear > 0 ? signedYear : 1 - signedYear;
 
-      if (options && options.budhhistYear) {
+      if (options && options.buddhistYear) {
         year = year + 543;
       }
 
@@ -50809,11 +50901,11 @@ var parsers = {
       var valueCallback = function (year) {
         var isTwoDigitYear = token === 'yy';
 
-        if (_options.budhhistYear && !isTwoDigitYear) {
+        if (_options.buddhistYear && !isTwoDigitYear) {
           year = year - 543;
         }
 
-        if (_options.budhhistYear && isTwoDigitYear) {
+        if (_options.buddhistYear && isTwoDigitYear) {
           if (year >= 43) {
             year = year - 43;
           } else {
@@ -55548,16 +55640,10 @@ var datePicker = function (_EventEmitter) {
 					if (__WEBPACK_IMPORTED_MODULE_1__utils_type__["e" /* isString */](_value)) {
 						var dates = _value.split(' - ');
 						if (dates.length) {
-							this.start = __WEBPACK_IMPORTED_MODULE_2_date_fns__["l" /* format */](new Date(dates[0]), this.format, {
-								locale: this.locale,
-								budhhistYear: this.options.budhhistYear
-							});
+							this.start = dates[0];
 						}
 						if (dates.length === 2) {
-							this.end = __WEBPACK_IMPORTED_MODULE_2_date_fns__["l" /* format */](new Date(dates[1]), this.format, {
-								locale: this.locale,
-								budhhistYear: this.options.budhhistYear
-							});
+							this.end = dates[1];
 						}
 					}
 					if (__WEBPACK_IMPORTED_MODULE_1__utils_type__["d" /* isObject */](_value) || __WEBPACK_IMPORTED_MODULE_1__utils_type__["b" /* isDate */](_value)) {
@@ -55904,9 +55990,26 @@ var datePicker = function (_EventEmitter) {
 
 			// get all days and whether they are within the current month and range
 			var days = new Array(__WEBPACK_IMPORTED_MODULE_2_date_fns__["f" /* differenceInDays */](end, start) + 1).fill(start).map(function (s, i) {
+				var startDate = _this5.start;
+				if (__WEBPACK_IMPORTED_MODULE_1__utils_type__["e" /* isString */](_this5.start)) {
+					startDate = __WEBPACK_IMPORTED_MODULE_2_date_fns__["E" /* parse */](_this5.start, _this5.format, new Date(), {
+						locale: _this5._locale,
+						budhhistYear: _this5.options.budhhistYear
+					});
+				}
+				var endDate = _this5.end;
+				if (__WEBPACK_IMPORTED_MODULE_1__utils_type__["e" /* isString */](_this5.end)) {
+					endDate = __WEBPACK_IMPORTED_MODULE_2_date_fns__["E" /* parse */](_this5.end, _this5.format, new Date(), {
+						locale: _this5._locale,
+						budhhistYear: _this5.options.budhhistYear
+					});
+				}
 				var theDate = __WEBPACK_IMPORTED_MODULE_2_date_fns__["J" /* startOfDay */](__WEBPACK_IMPORTED_MODULE_2_date_fns__["a" /* addDays */](s, i + _this5.options.weekStart));
 				var isThisMonth = __WEBPACK_IMPORTED_MODULE_2_date_fns__["x" /* isSameMonth */](date, theDate);
-				var isInRange = _this5.options.isRange && __WEBPACK_IMPORTED_MODULE_2_date_fns__["A" /* isWithinInterval */](theDate, __WEBPACK_IMPORTED_MODULE_2_date_fns__["J" /* startOfDay */](_this5.start), __WEBPACK_IMPORTED_MODULE_2_date_fns__["h" /* endOfDay */](_this5.end));
+				var isInRange = _this5.options.isRange && endDate && __WEBPACK_IMPORTED_MODULE_2_date_fns__["A" /* isWithinInterval */](theDate, {
+					start: __WEBPACK_IMPORTED_MODULE_2_date_fns__["J" /* startOfDay */](startDate),
+					end: __WEBPACK_IMPORTED_MODULE_2_date_fns__["h" /* endOfDay */](endDate)
+				});
 				var isDisabled = _this5.max ? __WEBPACK_IMPORTED_MODULE_2_date_fns__["u" /* isAfter */](__WEBPACK_IMPORTED_MODULE_2_date_fns__["J" /* startOfDay */](theDate), __WEBPACK_IMPORTED_MODULE_2_date_fns__["h" /* endOfDay */](_this5.max)) : false;
 				isDisabled = !isDisabled && _this5.min ? __WEBPACK_IMPORTED_MODULE_2_date_fns__["v" /* isBefore */](__WEBPACK_IMPORTED_MODULE_2_date_fns__["J" /* startOfDay */](theDate), __WEBPACK_IMPORTED_MODULE_2_date_fns__["J" /* startOfDay */](_this5.min)) : isDisabled;
 				var isHighlighted = false;
@@ -55946,20 +56049,6 @@ var datePicker = function (_EventEmitter) {
 					});
 				}
 
-				var startDate = _this5.start;
-				if (__WEBPACK_IMPORTED_MODULE_1__utils_type__["e" /* isString */](_this5.start)) {
-					startDate = __WEBPACK_IMPORTED_MODULE_2_date_fns__["E" /* parse */](_this5.start, _this5.format, new Date(), {
-						locale: _this5._locale,
-						budhhistYear: _this5.options.budhhistYear
-					});
-				}
-				var endDate = _this5.end;
-				if (__WEBPACK_IMPORTED_MODULE_1__utils_type__["e" /* isString */](_this5.end)) {
-					endDate = __WEBPACK_IMPORTED_MODULE_2_date_fns__["E" /* parse */](_this5.end, _this5.format, new Date(), {
-						locale: _this5._locale,
-						budhhistYear: _this5.options.budhhistYear
-					});
-				}
 				return {
 					date: theDate,
 					isRange: _this5.options.isRange,
@@ -56049,7 +56138,7 @@ var datePicker = function (_EventEmitter) {
 						return true;
 					}
 					if (min && max) {
-						return __WEBPACK_IMPORTED_MODULE_2_date_fns__["A" /* isWithinInterval */](_date, min, max);
+						return __WEBPACK_IMPORTED_MODULE_2_date_fns__["A" /* isWithinInterval */](_date, { start: min, end: max });
 					}
 					if (max) {
 						return __WEBPACK_IMPORTED_MODULE_2_date_fns__["v" /* isBefore */](_date, max) || __WEBPACK_IMPORTED_MODULE_2_date_fns__["w" /* isEqual */](_date, max);
@@ -56165,7 +56254,11 @@ var datePicker = function (_EventEmitter) {
 					this._date.end = this._isValidDate(date, this.min, this.max) ? __WEBPACK_IMPORTED_MODULE_2_date_fns__["h" /* endOfDay */](date) : this._date.end;
 				}
 				if (__WEBPACK_IMPORTED_MODULE_1__utils_type__["e" /* isString */](date)) {
-					this._date.end = this._isValidDate(__WEBPACK_IMPORTED_MODULE_2_date_fns__["F" /* parseISO */](date), this.min, this.max) ? __WEBPACK_IMPORTED_MODULE_2_date_fns__["h" /* endOfDay */](__WEBPACK_IMPORTED_MODULE_2_date_fns__["F" /* parseISO */](date)) : this._date.end;
+					var dateObject = __WEBPACK_IMPORTED_MODULE_2_date_fns__["E" /* parse */](date, this.format, new Date(), {
+						locale: this._locale,
+						budhhistYear: this.options.budhhistYear
+					});
+					this._date.end = this._isValidDate(dateObject, this.min, this.max) ? __WEBPACK_IMPORTED_MODULE_2_date_fns__["h" /* endOfDay */](dateObject) : this._date.end;
 				}
 			} else {
 				this._date.end = undefined;
@@ -60530,17 +60623,25 @@ var timePicker = function (_EventEmitter) {
 				if (!time) {
 					return false;
 				}
-				if (__WEBPACK_IMPORTED_MODULE_2_date_fns__["z" /* isValid */](time)) {
+
+				var _time = time;
+				if (__WEBPACK_IMPORTED_MODULE_1__utils_type__["e" /* isString */](time)) {
+					_time = parse(time, data.format, new Date(), {
+						locale: data.locale,
+						budhhistYear: data.budhhistYear
+					});
+				}
+				if (__WEBPACK_IMPORTED_MODULE_2_date_fns__["z" /* isValid */](_time)) {
 					if (!min && !max) {
 						return true;
 					}
 					if (min && max) {
-						return __WEBPACK_IMPORTED_MODULE_2_date_fns__["A" /* isWithinInterval */](time, min, max);
+						return __WEBPACK_IMPORTED_MODULE_2_date_fns__["A" /* isWithinInterval */](_time, { start: min, end: max });
 					}
 					if (max) {
-						return __WEBPACK_IMPORTED_MODULE_2_date_fns__["v" /* isBefore */](time, max) || __WEBPACK_IMPORTED_MODULE_2_date_fns__["w" /* isEqual */](time, max);
+						return __WEBPACK_IMPORTED_MODULE_2_date_fns__["v" /* isBefore */](_time, max) || __WEBPACK_IMPORTED_MODULE_2_date_fns__["w" /* isEqual */](_time, max);
 					}
-					return __WEBPACK_IMPORTED_MODULE_2_date_fns__["u" /* isAfter */](time, min) || __WEBPACK_IMPORTED_MODULE_2_date_fns__["w" /* isEqual */](time, min);
+					return __WEBPACK_IMPORTED_MODULE_2_date_fns__["u" /* isAfter */](_time, min) || __WEBPACK_IMPORTED_MODULE_2_date_fns__["w" /* isEqual */](_time, min);
 				} else {
 					return false;
 				}
@@ -60815,7 +60916,9 @@ var timePicker = function (_EventEmitter) {
 			}
 			e.stopPropagation();
 
+			console.log('before', this.end);
 			this.end = __WEBPACK_IMPORTED_MODULE_2_date_fns__["O" /* subMinutes */](this.end, this.options.minuteSteps);
+			console.log('after', this.end);
 			setTimeout(function () {
 				_this9._ui.end.minutes.number.classList.add('is-decrement-hide');
 
@@ -60947,14 +61050,10 @@ var timePicker = function (_EventEmitter) {
 					if (__WEBPACK_IMPORTED_MODULE_1__utils_type__["e" /* isString */](_value)) {
 						var times = _value.split(' - ');
 						if (times.length) {
-							this.start = __WEBPACK_IMPORTED_MODULE_2_date_fns__["l" /* format */](new Date(times[0]), this.format, {
-								locale: this.locale
-							});
+							this.start = times[0];
 						}
 						if (times.length === 2) {
-							this.end = __WEBPACK_IMPORTED_MODULE_2_date_fns__["l" /* format */](new Date(times[1]), this.format, {
-								locale: this.locale
-							});
+							this.end = times[1];
 						}
 					}
 					if (__WEBPACK_IMPORTED_MODULE_1__utils_type__["d" /* isObject */](_value) || __WEBPACK_IMPORTED_MODULE_1__utils_type__["b" /* isDate */](_value)) {
