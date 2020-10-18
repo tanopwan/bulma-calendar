@@ -857,9 +857,9 @@ export default class datePicker extends EventEmitter {
 			
 			var _date = date
 			if (type.isString(date)) {
-				_date = parse(date, data.format, new Date(), {
-					locale: data.locale,
-					budhhistYear: data.budhhistYear,
+				_date = parse(date, this.format, new Date(), {
+					locale: this.locale,
+					budhhistYear: this.options.budhhistYear,
 				})
 			}
 			if (dateFns.isValid(_date)) {

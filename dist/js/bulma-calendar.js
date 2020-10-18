@@ -44578,12 +44578,8 @@ var bulmaCalendar = function (_EventEmitter) {
       this._type = ['date', 'time', 'datetime'].indexOf(this.options.type.toLowerCase()) > -1 ? this.options.type.toLowerCase() : 'date';
       // Change element type to prevent browser default type="date" behavior
       this.element.setAttribute('type', 'text');
-      this.datePicker = new __WEBPACK_IMPORTED_MODULE_5__datePicker__["a" /* default */](_extends({}, this.options, {
-        lang: this.lang
-      }));
-      this.timePicker = new __WEBPACK_IMPORTED_MODULE_6__timePicker__["a" /* default */](_extends({}, this.options, {
-        lang: this.lang
-      }));
+      this.datePicker = new __WEBPACK_IMPORTED_MODULE_5__datePicker__["a" /* default */](_extends({}, this.options));
+      this.timePicker = new __WEBPACK_IMPORTED_MODULE_6__timePicker__["a" /* default */](_extends({}, this.options));
 
       if (this.element.value) {
         var dateValue = this.element.value;
@@ -56122,9 +56118,9 @@ var datePicker = function (_EventEmitter) {
 
 				var _date = date;
 				if (__WEBPACK_IMPORTED_MODULE_1__utils_type__["e" /* isString */](date)) {
-					_date = parse(date, data.format, new Date(), {
-						locale: data.locale,
-						budhhistYear: data.budhhistYear
+					_date = parse(date, this.format, new Date(), {
+						locale: this.locale,
+						budhhistYear: this.options.budhhistYear
 					});
 				}
 				if (__WEBPACK_IMPORTED_MODULE_2_date_fns__["z" /* isValid */](_date)) {
@@ -60465,6 +60461,7 @@ var timePicker = function (_EventEmitter) {
 
 		var _this = _possibleConstructorReturn(this, (timePicker.__proto__ || Object.getPrototypeOf(timePicker)).call(this));
 
+		console.log('2. timePicker constructor:', options.lang);
 		_this.options = _extends({}, __WEBPACK_IMPORTED_MODULE_5__defaultOptions__["a" /* default */], options);
 
 		_this._clickEvents = ['click', 'touch'];
@@ -60505,8 +60502,25 @@ var timePicker = function (_EventEmitter) {
 				start: __WEBPACK_IMPORTED_MODULE_2_date_fns__["L" /* startOfToday */](),
 				end: __WEBPACK_IMPORTED_MODULE_2_date_fns__["j" /* endOfToday */]()
 			};
-			this.start = this.options.start || __WEBPACK_IMPORTED_MODULE_2_date_fns__["L" /* startOfToday */]();
-			this.end = this.options.isRange ? this.options.end : __WEBPACK_IMPORTED_MODULE_2_date_fns__["j" /* endOfToday */]();
+			if (this.options.startTime) {
+				if (__WEBPACK_IMPORTED_MODULE_1__utils_type__["e" /* isString */](this.options.startTime)) {
+					console.log('locale', this._locale);
+					this.options.startTime = __WEBPACK_IMPORTED_MODULE_2_date_fns__["E" /* parse */](this.options.startTime, this.format, new Date(), {
+						locale: this._locale,
+						budhhistYear: this.options.budhhistYear
+					});
+				}
+			}
+			if (this.options.endTime) {
+				if (__WEBPACK_IMPORTED_MODULE_1__utils_type__["e" /* isString */](this.options.endTime)) {
+					this.options.endTime = __WEBPACK_IMPORTED_MODULE_2_date_fns__["E" /* parse */](this.options.endTime, this.format, new Date(), {
+						locale: this._locale,
+						budhhistYear: this.options.budhhistYear
+					});
+				}
+			}
+			this.start = this.options.startTime || __WEBPACK_IMPORTED_MODULE_2_date_fns__["L" /* startOfToday */]();
+			this.end = this.options.isRange ? this.options.endTime : __WEBPACK_IMPORTED_MODULE_2_date_fns__["j" /* endOfToday */]();
 
 			this._build();
 			this._bindEvents();
@@ -60620,9 +60634,10 @@ var timePicker = function (_EventEmitter) {
 
 				var _time = time;
 				if (__WEBPACK_IMPORTED_MODULE_1__utils_type__["e" /* isString */](time)) {
-					_time = parse(time, data.format, new Date(), {
-						locale: data.locale,
-						budhhistYear: data.budhhistYear
+					console.log('locale', this.locale);
+					_time = __WEBPACK_IMPORTED_MODULE_2_date_fns__["E" /* parse */](time, this.format, new Date(), {
+						locale: this.locale,
+						budhhistYear: this.options.budhhistYear
 					});
 				}
 				if (__WEBPACK_IMPORTED_MODULE_2_date_fns__["z" /* isValid */](_time)) {

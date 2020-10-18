@@ -14,7 +14,7 @@ export default class timePicker extends EventEmitter {
 			...defaultOptions,
 			...options
 		};
-
+		
 		this._clickEvents = ['click', 'touch'];
 		this._supportsPassive = utils.detectSupportsPassive();
 		this._id = utils.uuid('timePicker');
@@ -48,8 +48,24 @@ export default class timePicker extends EventEmitter {
 			start: dateFns.startOfToday(),
 			end: dateFns.endOfToday()
 		};
-		this.start = this.options.start || dateFns.startOfToday();
-		this.end = this.options.isRange ? this.options.end : dateFns.endOfToday();
+		if (this.options.startTime) {
+			if (type.isString(this.options.startTime)) {
+				this.options.startTime = dateFns.parse(this.options.startTime, this.format, new Date(), {
+					locale: this._locale,
+					budhhistYear: this.options.budhhistYear,
+				})
+			}
+		}
+		if (this.options.endTime) {
+			if (type.isString(this.options.endTime)) {
+				this.options.endTime = dateFns.parse(this.options.endTime, this.format, new Date(), {
+					locale: this._locale,
+					budhhistYear: this.options.budhhistYear,
+				})
+			}
+		}
+		this.start = this.options.startTime || dateFns.startOfToday();
+		this.end = this.options.isRange ? this.options.endTime : dateFns.endOfToday();
 
 		this._build();
 		this._bindEvents();
@@ -155,9 +171,9 @@ export default class timePicker extends EventEmitter {
 
 			var _time = time
 			if (type.isString(time)) {
-				_time = parse(time, data.format, new Date(), {
-					locale: data.locale,
-					budhhistYear: data.budhhistYear,
+				_time = dateFns.parse(time, this.format, new Date(), {
+					locale: this.locale,
+					budhhistYear: this.options.budhhistYear,
 				})
 			}
 			if (dateFns.isValid(_time)) {

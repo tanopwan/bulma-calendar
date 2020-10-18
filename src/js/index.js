@@ -720,12 +720,10 @@ export default class bulmaCalendar extends EventEmitter {
     // Change element type to prevent browser default type="date" behavior
     this.element.setAttribute('type', 'text');
     this.datePicker = new datePicker({
-      ...this.options,
-      lang: this.lang
+      ...this.options
     });
     this.timePicker = new timePicker({
-      ...this.options,
-      lang: this.lang
+      ...this.options
     });
     
     if (this.element.value) {
